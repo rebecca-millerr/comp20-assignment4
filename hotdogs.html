@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hot Dog JavaScript Practice</title>
+        <meta charset=”utf-8”>
+        <script language="javascript">
+            const DOG_PRICE = 3.25;
+            const FRIES_PRICE = 2;
+            const DRINK_PRICE = 1.5;
+
+            function makeNum(name, num, money) {
+                if ( money )
+                    return name + ': $' + num + '\n';
+                else
+                    return name + ': ' + num + '\n';
+            }
+        </script>
+    </head>
+    <body>
+        <center style="padding-top: 40px">
+            <h1>Joe's Hotdogs</h1>
+            <script language="javascript">
+                
+                // execute first part of page when page loads
+                window.addEventListener('load', () => {
+                
+                // sets up associative arrays
+                let prices = [{dogs: DOG_PRICE}, {fries: FRIES_PRICE}, {drinks: DRINK_PRICE}];
+                let quants = [{dogs: 0}, {fries: 0}, {drinks: 0}];
+
+                // sets up parent form
+                let newform = document.createElement('FORM');
+                newform.setAttribute('id', 'form');
+                newform.setAttribute('style', 'margin: 0 45% 0 45%;');
+                document.body.appendChild(newform);
+
+                // sets up input elements of form
+                let items, id;
+
+                for ( let i = 0; i < 3; i++ )
+                {
+                    let newfield = document.createElement('INPUT');
+                    newfield.setAttribute('type', 'text');
+
+                    if ( i === 0 ) {
+                        items = 'hot dogs?';
+                        id = 'num-dogs';
+                    }
+                    else if ( i === 1 ) {
+                        items = 'french fries?';
+                        id = 'num-fries';
+                    }
+                    else {
+                        items = 'drinks?';
+                        id = 'num-drinks';
+                    }
+                    newfield.setAttribute('placeholder', 'How many ' + items);
+                    newfield.setAttribute('id', id);
+                    newfield.setAttribute('style', 'text-align: center; display: block; margin: 10px;');
+                    document.getElementById('form').appendChild(newfield);
+                }
+
+                // sets up submit button
+                let newbutton = document.createElement('INPUT');
+                newbutton.setAttribute('type', 'button');
+                newbutton.setAttribute('id', 'btn');
+                newbutton.setAttribute('value', 'Order');
+                newbutton.setAttribute('style', 'margin: 0 44% 0 44%;');
+
+                // triggers this function when button clicked
+                newbutton.onclick = () => { 
+
+                    // reads input values
+                    const want_dogs = document.getElementById('num-dogs').value;
+                    const want_fries = document.getElementById('num-fries').value;
+                    const want_drinks = document.getElementById('num-drinks').value;
+
+                    // calcs subtotal
+                    let subtotal = want_dogs * DOG_PRICE + want_fries * FRIES_PRICE + want_drinks * DRINK_PRICE;
+                    subtotal = subtotal.toFixed(2); // broken
+                    
+                    // calcs discount
+                    let discount = 0;
+
+                    if ( subtotal >= 20 )
+                        discount = (subtotal * 0.1).toFixed(2);
+
+                    // calcs tax
+                    let tax = (subtotal * 0.0625).toFixed(2);
+
+                    // sets up and calcs total
+                    subtotal = parseFloat(subtotal, 10);
+                    discount = parseFloat(discount, 10);
+                    tax      = parseFloat(tax, 10);
+                    let total = (subtotal -  discount + tax).toFixed(2);
+
+                    // alerts user with info
+                    const string = makeNum('Number of hot dogs', want_dogs, false) + makeNum('Number of french fries', want_fries, false) + makeNum('Number of drinks', want_drinks, false) + makeNum('Subtotal', subtotal, true) + makeNum('Discount', discount, true) + makeNum('Tax', tax, true) + makeNum('Total', total, true);
+                    alert(string);
+                }
+
+                // adds button to form
+                document.getElementById('form').appendChild(newbutton);
+            });
+            </script>
+        </center>
+    </body>
+</html>

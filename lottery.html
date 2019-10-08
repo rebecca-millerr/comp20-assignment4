@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lottery JavaScript Practice</title>
+    <meta charset=”utf-8”>
+    <script language="javascript">
+        
+        // prints entire array along with message about it
+        function printArray(arr, id, extra) {
+            let string = "";
+
+            for ( let i = 0; i < arr.length; i++ )
+                string += arr[i] + " ";
+
+            document.getElementById(id).innerHTML = extra + string;
+        }
+
+        // sorts every number in ascending order but leaves lucky ball where it is
+        function sortAllButLast(arr) {
+            const last = arr.pop();
+            arr.sort(function(a, b){return a - b});
+            arr.push(last);
+        }
+
+        // counts how many elements are common between 2 arrays
+        function compareArrays(arr1, arr2) {
+            let sim_counter = 0;
+            let last_same   = 0;
+
+            for ( let i = 0; i < 5; i++ )
+                arr2[i] = parseInt(arr2[i], 10);
+
+            for ( let j = 0; j < 5; j++ )
+                arr1[j] = parseInt(arr1[j], 10);
+
+            for ( let i = 0; i < 5; i++ ) {
+                for ( let j = last_same; j < 5; j++ )
+                {
+                    if ( arr1[j] === arr2[i] )    // if match, don't check
+                    {                             // against other lot nums
+                        sim_counter++;
+                        last_same = j + 1;
+                        break;
+                    }
+                    
+                    else if ( arr1[j] > arr2[i] ) // lottery num too big so
+                        break;                    // all after also too big
+                    
+                    else                          // lot num still too small
+                        last_same++;              // so check next one
+                } 
+            }   
+
+            return sim_counter;
+        }
+
+        // checks if two numbers are equal
+        function compareNum(arr1, arr2) {
+            if ( arr1[5] == arr2[5] )
+                return true;
+            else
+                return false;
+        }
+
+        // calculates how much money won based on matches
+        function findPayout(num_matches, extra_match) {
+            if ( extra_match ) {
+                switch ( num_matches ) {
+                    case 0: return 4;
+                    case 1: return 6;
+                    case 2: return 25;
+                    case 3: return 150;
+                    case 4: return 5000;
+                    case 5: return 7000; // special case
+                    default: return 0;
+                }
+            }
+            else {
+                switch ( num_matches ) {
+                    case 0: return 0;
+                    case 1: return 0;
+                    case 2: return 3;
+                    case 3: return 20;
+                    case 4: return 200;
+                    case 5: return 25000; // special case
+                    default: return 0;
+                } 
+            }
+        }
+    </script>
+</head>
+<body>
+    <center style="padding-top: 40px;">
+        <h1>Quick Pick</h1>
+        <p id="first-nums"></p>
+        <p id="second-nums"></p>
+        <form id="form">
+            <input type="text" placeholder="Enter 5 numbers" id="norm-nums">
+            <input type="text" placeholder="Enter Lucky Ball" id="lucky-num">
+            <input id="btn" type="button" value="Submit">
+        </form>
+        <p id="comparison"></p>
+
+        <script language="javascript">
+            
+            // execute first part of page when page loads
+            window.addEventListener('load', () => {
+                const lotteryNums = new Array(6);
+
+                // sets 5 lottery #s
+                for ( let i = 0; i < 5; i++ )
+                    lotteryNums[i] = Math.round(Math.random() * 47 + 1);
+
+                // sets lucky ball #
+                lotteryNums[5] = Math.round(Math.random() * 17 + 1);
+
+                printArray(lotteryNums, 'first-nums', 'Unsorted: ');
+
+                sortAllButLast(lotteryNums);
+                printArray(lotteryNums, 'second-nums', 
+                          'Sorted: &nbsp;&nbsp;&nbsp;&nbsp;');
+            });
+
+            // execute when button clicked (form submitted)
+            document.getElementById('btn').addEventListener('click', () => {
+                
+                // retrieving and sorting user entered numbers
+                let enteredNums = document.getElementById('norm-nums').value;
+                
+                enteredNums = enteredNums.split(' ');
+                enteredNums.push(document.getElementById('lucky-num').value);
+                sortAllButLast(enteredNums);
+
+                // retrieving randomly generated numbers
+                let lotteryNums = document.getElementById('second-nums').innerHTML;
+                lotteryNums = lotteryNums.split(' ');
+                lotteryNums[1] = lotteryNums[1].replace(/&nbsp;/g,'').trim();
+                lotteryNums = lotteryNums.slice(1);
+                
+                // finding number of matches between 2 arrays
+                let matches = compareArrays(lotteryNums, enteredNums);
+                let lucky_match = compareNum(lotteryNums, enteredNums);
+
+                // calculating and printing money
+                let string = '';
+                const payout = findPayout(matches, lucky_match);
+                string += 'You\'ve won $' + payout;
+
+                if ( payout === 7000 )               // handles special cases
+                    string += ' a week for LIFE';
+                else if ( payout === 25000 )
+                    string += ' a year for LIFE';
+
+                string += '!';
+                document.getElementById('comparison').innerHTML = string;
+            });
+        </script>
+    </center>
+</body>
+</html>
